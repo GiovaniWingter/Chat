@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Chat Privado</title>
+  <script src="/socket.io/socket.io.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      height: 100vh;
+      margin: 0;
+    }
+
+    #sidebar {
+      width: 250px;
+      background: #f4f4f4;
+      border-right: 1px solid #ccc;
+      padding: 10px;
+      overflow-y: auto;
+    }
+
+    #chat {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #messages {
+      flex: 1;
+      padding: 10px;
+      overflow-y: auto;
+      background: #fff;
+    }
+
+    .msg {
+      margin: 5px 0;
+      padding: 8px;
+      border-radius: 5px;
+      max-width: 70%;
+    }
+
+    .me {
+      background: #d1ffd1;
+      align-self: flex-end;
+    }
+
+    .other {
+      background: #f0f0f0;
+      align-self: flex-start;
+    }
+
+    #form {
+      display: flex;
+      border-top: 1px solid #ccc;
+    }
+
+    #input {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      outline: none;
+    }
+
+    #sendBtn {
+      padding: 10px 15px;
+      border: none;
+      background: #28a745;
+      color: #fff;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Lista de usuários -->
+  <div id="sidebar">
+    <h3>Usuários</h3>
+    <ul>
+      <% usuarios.forEach(u=> { %>
+        <% if (u.id_usuario !==usuarioLogado.id) { %>
+          <li>
+            <a href="#" class="user-link" data-id="<%= u.id_usuario %>">
+              <%= u.nome_usuario %>
+            </a>
+          </li>
+          <% } %>
+            <% }) %>
+    </ul>
+  </div>
+
+  <!-- Área de chat -->
+  <div id="chat">
+    <div id="messages"></div>
+    <form id="form">
+      <input id="input" autocomplete="off" placeholder="Digite sua mensagem..." />
+      <button id="sendBtn">Enviar</button>
+    </form>
+  </div>
+
+  <script>
+    const socket = io();
+
+    const usuarioLogado = <%- JSON.stringify(usuarioLogado) %>;
+    let destinatarioId = null;
+
+    // Quando clicar em um usuário da lista
+    document.querySelectorAll('.user-link').forEach(el => {
+      el.addEventListener('click', async (e) => {
+        e.preventDefault();
+        destinatarioId = el.dataset.id;
+        document.getElementById('messages').innerHTML = "";
+
+        // Buscar mensagens históricas no servidor via fetch
+        const res = await fetch(`/chat/mensagens/${destinatarioId}`, {
+          method: "GET",
+          headers: {
+            "Accept": "application/json"
+          }
+        });
+        const mensagens = await res.json();
+
+
+        mensagens.forEach(m => {
+          addMessage(m.conteudo, m.remetente_id == usuarioLogado.id ? "me" : "other");
+          console.log(m.conteudo, m.remetente_id == usuarioLogado.id ? "me" : "other");
+        });
+      });
+    });
+
+    // Enviar mensagem
+    document.getElementById('form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      if (!destinatarioId) return alert("Escolha um usuário para conversar");
+
+      const input = document.getElementById('input');
+      const msg = input.value.trim();
+      if (msg === "") return;
+
+      socket.emit("privateMessage", {
+        remetenteId: usuarioLogado.id_usuario,
+        destinatarioId: destinatarioId,
+        conteudo: msg
+      });
+
+      addMessage(msg, "me");
+      const res =  fetch(`/chat`, {
+        method: "POST",
+        headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          destinatario_id: destinatarioId,  // substitua com a variável real
+          conteudo: msg                // substitua com a variável real
+        })
+      })
+      input.value = "";
+    });
+
+    // Receber mensagem
+    socket.on("privateMessage", (data) => {
+      if (data.remetenteId == destinatarioId) {
+        addMessage(data.conteudo, "other");
+      }
+    });
+
+    function addMessage(text, type) {
+      const div = document.createElement("div");
+      div.className = "msg " + type;
+      div.innerText = text;
+      document.getElementById("messages").appendChild(div);
+      div.scrollIntoView();
+    }
+  </script>
+</body>
+
+</html>
