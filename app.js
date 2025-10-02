@@ -27,5 +27,6 @@ app.use("/", rotas);
 
 
 server.listen(process.env.APP_PORT, () => {
-  console.log(`Servidor online...\nhttp://localhost:${process.env.APP_PORT}`);
+  console.log(`Servidor online...
+\nhttp://localhost:${process.env.APP_PORT}`);
 }); 

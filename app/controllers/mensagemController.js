@@ -41,15 +41,13 @@ const mensagemController = {
     mostrarConversas: async (req, res) => {
         try {
           const userId = req.session.autenticado.id;
-          console.log(userId);
           const destinatarioId = req.params.id;
-          console.log(req.params.id);
+          const usuarios = await usuarioModel.findAll(); // lista todos usuários
     
           // Pega todas as mensagens entre userId e destinatarioId
           const mensagens = await mensagemModel.findConversas(userId, destinatarioId);
-            console.log(mensagens);
 
-            // Se a requisição foi feita via fetch (esperando JSON)
+          // Se a requisição foi feita via fetch (esperando JSON)
           if (req.headers["accept"] && req.headers["accept"].includes("application/json")) {
             return res.json(mensagens);
           }
@@ -57,11 +55,11 @@ const mensagemController = {
           // Caso contrário, renderiza a página EJS
           res.render("pages/chat", {
             usuarioLogado: req.session.autenticado,
-            usuarios: [], // você pode carregar lista de usuários aqui se quiser
+            usuarios, 
             mensagens,
           });
         } catch (error) {
-          console.error("Erro ao carregar conversas:", error);
+          console.log("Erro ao carregar conversas:", error);
           res.status(500).send("Erro ao carregar conversas");
         }
       },

@@ -1,0 +1,94 @@
+  body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      height: 100vh;
+      margin: 0;
+    }
+
+    #sidebar {
+        width: 250px;
+        background: #f4f4f4;
+        border-right: 1px solid #ccc;
+        padding: 10px;
+        overflow-y: auto;
+    }
+    
+    #sidebar ul{
+        list-style:  none;
+        padding: 0;
+    }
+
+    #sidebar ul li{
+        width: 90%;
+        background-color: lightgray;
+        height: 2rem ;
+        display: flex;
+        align-items: center;
+        border-radius: 20px;
+        padding-left: 15px;
+        margin-bottom: 8px;
+    }
+    #sidebar ul li a{
+        text-decoration: none;
+        font-size: 1.2rem;
+        color: black;
+        cursor: pointer;
+        width: 100%;
+    }
+
+    #sidebar ul li.marcado{
+        color: black;
+        background-color: #c8e0f3;
+    }
+
+    #chat {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #messages {
+      flex: 1;
+      padding: 10px;
+      overflow-y: auto;
+      background: #fff;
+    }
+
+    .msg {
+      margin: 5px 0;
+      padding: 8px;
+      border-radius: 5px;
+      max-width: 80%;
+    }
+
+    .me {
+      background: #d1ffd1;
+      align-self: flex-end;
+      text-align: right;
+      margin-left: 20%;
+    }
+
+    .other {
+      background: #c8e0f3;
+      align-self: flex-start;
+    }
+
+    #form {
+      display: flex;
+      border-top: 1px solid #ccc;
+    }
+
+    #input {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      outline: none;
+    }
+
+    #sendBtn {
+      padding: 10px 15px;
+      border: none;
+      background: #28a745;
+      color: #fff;
+      cursor: pointer;
+    }

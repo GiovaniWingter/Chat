@@ -101,7 +101,7 @@ router.post("/chat",
   }
 );
 
-
+//buscar conversas entre dois usuarios
 router.get(
   "/chat/mensagens/:id",
   verificarUsuAutorizado([1, 2, 3], "pages/restrito"),

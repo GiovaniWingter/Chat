@@ -5,72 +5,7 @@
   <meta charset="UTF-8">
   <title>Chat Privado</title>
   <script src="/socket.io/socket.io.js"></script>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      display: flex;
-      height: 100vh;
-      margin: 0;
-    }
-
-    #sidebar {
-      width: 250px;
-      background: #f4f4f4;
-      border-right: 1px solid #ccc;
-      padding: 10px;
-      overflow-y: auto;
-    }
-
-    #chat {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-    }
-
-    #messages {
-      flex: 1;
-      padding: 10px;
-      overflow-y: auto;
-      background: #fff;
-    }
-
-    .msg {
-      margin: 5px 0;
-      padding: 8px;
-      border-radius: 5px;
-      max-width: 70%;
-    }
-
-    .me {
-      background: #d1ffd1;
-      align-self: flex-end;
-    }
-
-    .other {
-      background: #f0f0f0;
-      align-self: flex-start;
-    }
-
-    #form {
-      display: flex;
-      border-top: 1px solid #ccc;
-    }
-
-    #input {
-      flex: 1;
-      padding: 10px;
-      border: none;
-      outline: none;
-    }
-
-    #sendBtn {
-      padding: 10px 15px;
-      border: none;
-      background: #28a745;
-      color: #fff;
-      cursor: pointer;
-    }
-  </style>
+  <link rel="stylesheet" href="css/chat.css">  
 </head>
 
 <body>
@@ -78,15 +13,15 @@
   <div id="sidebar">
     <h3>Usuários</h3>
     <ul>
-      <% usuarios.forEach(u=> { %>
-        <% if (u.id_usuario !==usuarioLogado.id) { %>
+      <% usuarios.forEach((u)=> { 
+        if (u.id_usuario !==usuarioLogado.id) { %>
           <li>
             <a href="#" class="user-link" data-id="<%= u.id_usuario %>">
               <%= u.nome_usuario %>
             </a>
           </li>
-          <% } %>
-            <% }) %>
+          <% } 
+         }) %>
     </ul>
   </div>
 
@@ -112,6 +47,12 @@
         destinatarioId = el.dataset.id;
         document.getElementById('messages').innerHTML = "";
 
+        
+        // remover classe marcado de todos os <li>
+        document.querySelectorAll('ul li').forEach(li => li.classList.remove('marcado'));
+        // adicionar classe ao <li> pai do link clicado
+        el.closest('li').classList.add('marcado');
+
         // Buscar mensagens históricas no servidor via fetch
         const res = await fetch(`/chat/mensagens/${destinatarioId}`, {
           method: "GET",
@@ -123,8 +64,7 @@
 
 
         mensagens.forEach(m => {
-          addMessage(m.conteudo, m.remetente_id == usuarioLogado.id ? "me" : "other");
-          console.log(m.conteudo, m.remetente_id == usuarioLogado.id ? "me" : "other");
+          addMessage(m.conteudo, m.remetente_id == usuarioLogado.id ? "me" : "other", m.remetente_nome, m.data_envio);
         });
       });
     });
@@ -152,8 +92,8 @@
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          destinatario_id: destinatarioId,  // substitua com a variável real
-          conteudo: msg                // substitua com a variável real
+          destinatario_id: destinatarioId,  
+          conteudo: msg               
         })
       })
       input.value = "";
@@ -166,10 +106,11 @@
       }
     });
 
-    function addMessage(text, type) {
+    function addMessage(text, type, nome, data) {
+      const data_ = new Date(data);
       const div = document.createElement("div");
       div.className = "msg " + type;
-      div.innerText = text;
+      div.innerHTML = `<b>${nome} - ${data_.toLocaleDateString('pt-BR')} ${data_.toLocaleTimeString('pt-BR')} </b> <br><br>`+ text;
       document.getElementById("messages").appendChild(div);
       div.scrollIntoView();
     }

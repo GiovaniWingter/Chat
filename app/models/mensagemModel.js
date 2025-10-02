@@ -131,12 +131,12 @@ const mensagemModel = {
                 INNER JOIN usuario u1 ON u1.id_usuario = m.remetente_id
                 INNER JOIN usuario u2 ON u2.id_usuario = m.destinatario_id
                 WHERE 
-                    (m.remetente_id = 2 AND m.destinatario_id = 1) 
+                    (m.remetente_id = ? AND m.destinatario_id = ?) 
                     OR 
-                    (m.remetente_id = 1 AND m.destinatario_id = 2)
-                ORDER BY m.data_envio DESC
+                    (m.remetente_id = ? AND m.destinatario_id = ?)
+                ORDER BY m.data_envio ASC
                 LIMIT 15;`,
-                [usuarioId, destinatarioId]
+                [usuarioId, destinatarioId,destinatarioId,usuarioId]
             );
             return resultados;
         } catch (error) {
