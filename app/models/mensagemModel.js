@@ -134,8 +134,7 @@ const mensagemModel = {
                     (m.remetente_id = ? AND m.destinatario_id = ?) 
                     OR 
                     (m.remetente_id = ? AND m.destinatario_id = ?)
-                ORDER BY m.data_envio ASC
-                LIMIT 15;`,
+                ORDER BY m.data_envio ASC;`,
                 [usuarioId, destinatarioId,destinatarioId,usuarioId]
             );
             return resultados;
@@ -144,40 +143,7 @@ const mensagemModel = {
             return error;
         }
     },
-    // findConversas: async (usuarioId) => {
-    //     try {
-    //         const [resultados] = await pool.query(
-    //             `SELECT m1.id_mensagem,
-    //                     m1.remetente_id,
-    //                     m1.destinatario_id,
-    //                     m1.conteudo,
-    //                     m1.data_envio,
-    //                     u1.nome_usuario AS remetente_nome,
-    //                     u2.nome_usuario AS destinatario_nome
-    //              FROM mensagem m1
-    //              INNER JOIN (
-    //                 SELECT 
-    //                     LEAST(remetente_id, destinatario_id) AS u1,
-    //                     GREATEST(remetente_id, destinatario_id) AS u2,
-    //                     MAX(data_envio) AS ultima_data
-    //                 FROM mensagem
-    //                 WHERE remetente_id = ? OR destinatario_id = ?
-    //                 GROUP BY u1, u2
-    //              ) m2
-    //              ON ((LEAST(m1.remetente_id, m1.destinatario_id) = m2.u1)
-    //                  AND (GREATEST(m1.remetente_id, m1.destinatario_id) = m2.u2)
-    //                  AND m1.data_envio = m2.ultima_data)
-    //              INNER JOIN usuario u1 ON u1.id_usuario = m1.remetente_id
-    //              INNER JOIN usuario u2 ON u2.id_usuario = m1.destinatario_id
-    //              ORDER BY m1.data_envio DESC`,
-    //             [usuarioId, usuarioId]
-    //         );
-    //         return resultados;
-    //     } catch (error) {
-    //         console.log(error);
-    //         return error;
-    //     }
-    // },
+    
     // Contar mensagens entre dois usuários
     countMensagens: async (usuarioId1, usuarioId2) => {
         try {

@@ -9,7 +9,8 @@ const mensagemController = {
         body("destinatario_id")
             .isInt().withMessage("Destinatário inválido"),
         body("conteudo")
-            .isLength({ min: 1, max: 500 }).withMessage("Mensagem deve ter entre 1 e 500 caracteres"),
+            .isLength({ min: 1, max: 500 })
+            .withMessage("Mensagem deve ter entre 1 e 500 caracteres"),
     ],
 
     // Exibe página de chat com lista de usuários
@@ -77,9 +78,7 @@ const mensagemController = {
                 usuarioLogado: req.session.autenticado
             });
         }
-
         const { destinatario_id, conteudo } = req.body;
-
         try {
             const novaMensagem = {
                 remetente_id: req.session.autenticado.id,
@@ -87,18 +86,17 @@ const mensagemController = {
                 conteudo,
                 data_envio: new Date()
             };
-
             let result = await mensagemModel.create(novaMensagem);
             console.log(result);
             res.redirect("/chat");
-
         } catch (error) {
             console.log(error);
             res.render("pages/chat", {
                 usuarios: [],
                 mensagens: [],
                 listaErros: null,
-                dadosNotificacao: { titulo: "Erro!", mensagem: "Falha ao enviar mensagem.", tipo: "error" },
+                dadosNotificacao: { titulo: "Erro!", 
+                    mensagem: "Falha ao enviar mensagem.", tipo: "error" },
                 usuarioLogado: req.session.autenticado
             });
         }
