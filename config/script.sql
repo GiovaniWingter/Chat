@@ -1,10 +1,10 @@
 CREATE DATABASE  IF NOT EXISTS `autenticacao` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
 USE `autenticacao`;
--- MySQL dump 10.13  Distrib 8.0.31, for Win64 (x86_64)
+-- MySQL dump 10.13  Distrib 8.0.40, for Win64 (x86_64)
 --
 -- Host: localhost    Database: autenticacao
 -- ------------------------------------------------------
--- Server version	8.0.31
+-- Server version	8.0.40
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -76,6 +76,38 @@ INSERT INTO `hq` VALUES (1,'O Cavaleiro das Trevas','Batman de Frank Miller','im
 UNLOCK TABLES;
 
 --
+-- Table structure for table `mensagem`
+--
+
+DROP TABLE IF EXISTS `mensagem`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `mensagem` (
+  `id_mensagem` int NOT NULL AUTO_INCREMENT,
+  `remetente_id` int NOT NULL,
+  `destinatario_id` int NOT NULL,
+  `conteudo` text NOT NULL,
+  `data_envio` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `status` enum('enviada','entregue','lida') DEFAULT 'enviada',
+  PRIMARY KEY (`id_mensagem`),
+  KEY `remetente_id` (`remetente_id`),
+  KEY `destinatario_id` (`destinatario_id`),
+  CONSTRAINT `mensagem_ibfk_1` FOREIGN KEY (`remetente_id`) REFERENCES `usuario` (`id_usuario`),
+  CONSTRAINT `mensagem_ibfk_2` FOREIGN KEY (`destinatario_id`) REFERENCES `usuario` (`id_usuario`)
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `mensagem`
+--
+
+LOCK TABLES `mensagem` WRITE;
+/*!40000 ALTER TABLE `mensagem` DISABLE KEYS */;
+INSERT INTO `mensagem` VALUES (1,1,2,'fawfw','2025-10-02 21:08:11','enviada'),(2,2,1,'wetwetwet','2025-10-02 21:33:55','enviada'),(3,2,1,'wetwetw','2025-10-02 21:33:57','enviada'),(4,1,2,'twetywe','2025-10-02 21:40:08','enviada'),(5,1,2,'sgfwseg','2025-10-02 21:58:48','enviada'),(6,1,2,'dsgasdgasklm aewoj powejk owpo itkpoweko weop jktwepojt poweopt jkwoepj topwe','2025-10-02 22:13:38','enviada'),(7,1,2,'wegwetg wejtoipwejopt jwepo wpoejkt opwejk weopjkt wpoejkt  12','2025-10-02 22:13:45','enviada');
+/*!40000 ALTER TABLE `mensagem` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `tipo_usuario`
 --
 
@@ -125,7 +157,7 @@ CREATE TABLE `usuario` (
   PRIMARY KEY (`id_usuario`),
   KEY `fk_usuario_tipo_usuario_idx` (`tipo_usuario`),
   CONSTRAINT `fk_usuario_tipo_usuario` FOREIGN KEY (`tipo_usuario`) REFERENCES `tipo_usuario` (`id_tipo_usuario`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -134,7 +166,7 @@ CREATE TABLE `usuario` (
 
 LOCK TABLES `usuario` WRITE;
 /*!40000 ALTER TABLE `usuario` DISABLE KEYS */;
-INSERT INTO `usuario` VALUES (1,'Helvética','helvinha','$2a$12$J1piFIoOATeGAlIOPW0HSuo.pWb/tBJabaoyNNMkxwgrLAG70MYFK','helvinh@gmail.com','1234567890123','06386670','13','próx. esquina 2',NULL,NULL,3,1),(2,'Ana Julia','anajulia','$2a$12$PlgVYz2SaOfcKcKt6kqrCevcRMRLZSoIw43cCo8cOF8DNECZ9vgRa','ana@julia.com','112342358923',NULL,NULL,NULL,NULL,NULL,2,1);
+INSERT INTO `usuario` VALUES (1,'Helvética','helvinha','$2a$12$J1piFIoOATeGAlIOPW0HSuo.pWb/tBJabaoyNNMkxwgrLAG70MYFK','helvinh@gmail.com','1234567890123','06386670','13','próx. esquina 2',NULL,NULL,3,1),(2,'Ana Julia','anajulia','$2a$12$PlgVYz2SaOfcKcKt6kqrCevcRMRLZSoIw43cCo8cOF8DNECZ9vgRa','ana@julia.com','112342358923',NULL,NULL,NULL,NULL,NULL,2,1),(3,'Teste novo','testenovo','$2a$12$jZfh9lNb5SCt/CrWY7DgKOHkSV4AN5DcyzA9PwpnyXu4xcSy.6etS','teste@gmail.com',NULL,NULL,NULL,NULL,NULL,NULL,1,1);
 /*!40000 ALTER TABLE `usuario` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -147,4 +179,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-05-14 16:41:51
+-- Dump completed on 2025-10-02 20:43:54
