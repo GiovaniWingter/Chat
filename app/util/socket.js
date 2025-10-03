@@ -1,4 +1,3 @@
-// socket.js
 const { mensagemController } = require("../controllers/mensagemController");
 
 const usuariosConectados = {};
