@@ -18,7 +18,6 @@ const mensagemController = {
         try {
             const usuarios = await usuarioModel.findAll(); // lista todos usuários
             const mensagens = await mensagemModel.findConversas(req.session.autenticado.id);
-
             res.render("pages/chat", {
                 usuarios,
                 mensagens,
@@ -26,7 +25,6 @@ const mensagemController = {
                 dadosNotificacao: null,
                 usuarioLogado: req.session.autenticado
             });
-
         } catch (error) {
             console.log(error);
             res.render("pages/chat", {
@@ -41,29 +39,26 @@ const mensagemController = {
 
     mostrarConversas: async (req, res) => {
         try {
-          const userId = req.session.autenticado.id;
-          const destinatarioId = req.params.id;
-          const usuarios = await usuarioModel.findAll(); // lista todos usuários
-    
-          // Pega todas as mensagens entre userId e destinatarioId
-          const mensagens = await mensagemModel.findConversas(userId, destinatarioId);
-
-          // Se a requisição foi feita via fetch (esperando JSON)
-          if (req.headers["accept"] && req.headers["accept"].includes("application/json")) {
-            return res.json(mensagens);
-          }
-    
-          // Caso contrário, renderiza a página EJS
-          res.render("pages/chat", {
-            usuarioLogado: req.session.autenticado,
-            usuarios, 
-            mensagens,
-          });
+            const userId = req.session.autenticado.id;
+            const destinatarioId = req.params.id;
+            const usuarios = await usuarioModel.findAll(); // lista todos usuários
+            // Pega todas as mensagens entre userId e destinatarioId
+            const mensagens = await mensagemModel.findConversas(userId, destinatarioId);
+            // Se a requisição foi feita via fetch (esperando JSON)
+            if (req.headers["accept"] && req.headers["accept"].includes("application/json")) {
+                return res.json(mensagens);
+            }
+            // Caso contrário, renderiza a página EJS
+            res.render("pages/chat", {
+                usuarioLogado: req.session.autenticado,
+                usuarios,
+                mensagens,
+            });
         } catch (error) {
-          console.log("Erro ao carregar conversas:", error);
-          res.status(500).send("Erro ao carregar conversas");
+            console.log("Erro ao carregar conversas:", error);
+            res.status(500).send("Erro ao carregar conversas");
         }
-      },
+    },
 
     // Envia mensagem (mesmo se destinatário não estiver online)
     enviarMensagem: async (req, res) => {
@@ -95,12 +90,26 @@ const mensagemController = {
                 usuarios: [],
                 mensagens: [],
                 listaErros: null,
-                dadosNotificacao: { titulo: "Erro!", 
-                    mensagem: "Falha ao enviar mensagem.", tipo: "error" },
+                dadosNotificacao: {
+                    titulo: "Erro!",
+                    mensagem: "Falha ao enviar mensagem.", tipo: "error"
+                },
                 usuarioLogado: req.session.autenticado
             });
         }
-    }
+    },
+
+
+    salvarMensagemViaSocket: async (data) => {
+        const novaMensagem = {
+            remetente_id: data.remetenteId,
+            destinatario_id: data.destinatarioId,
+            conteudo: data.conteudo,
+            data_envio: new Date(),
+        };
+
+        return await mensagemModel.create(novaMensagem);
+    },
 }
 
 module.exports = { mensagemController };

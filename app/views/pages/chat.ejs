@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <title>Chat Privado</title>
   <script src="/socket.io/socket.io.js"></script>
-  <link rel="stylesheet" href="css/chat.css">  
+  <link rel="stylesheet" href="css/chat.css">
 </head>
 
 <body>
@@ -13,15 +13,14 @@
   <div id="sidebar">
     <h3>Usuários</h3>
     <ul>
-      <% usuarios.forEach((u)=> { 
+      <% usuarios.forEach((u)=> {
         if (u.id_usuario !==usuarioLogado.id) { %>
-          <li>
-            <a href="#" class="user-link" data-id="<%= u.id_usuario %>">
-              <%= u.nome_usuario %>
-            </a>
-          </li>
-          <% } 
-         }) %>
+        <li>
+          <a href="#" class="user-link" data-id="<%= u.id_usuario %>">
+            <%= u.nome_usuario %>
+          </a>
+        </li>
+        <% } }) %>
     </ul>
   </div>
 
@@ -37,8 +36,10 @@
   <script>
     const socket = io();
 
-    const usuarioLogado = <%- JSON.stringify(usuarioLogado) %>;
+    const usuarioLogado = <% - JSON.stringify(usuarioLogado) %>;
     let destinatarioId = null;
+    // Enviar login para registrar o socket no servidor
+    socket.emit("login", usuarioLogado.id);
 
     // Quando clicar em um usuário da lista
     document.querySelectorAll('.user-link').forEach(el => {
@@ -46,14 +47,11 @@
         e.preventDefault();
         destinatarioId = el.dataset.id;
         document.getElementById('messages').innerHTML = "";
-
-        
         // remover classe marcado de todos os <li>
         document.querySelectorAll('ul li')
           .forEach(li => li.classList.remove('marcado'));
         // adicionar classe ao <li> pai do link clicado
         el.closest('li').classList.add('marcado');
-
         // Buscar mensagens históricas no servidor via fetch
         const res = await fetch(`/chat/mensagens/${destinatarioId}`, {
           method: "GET",
@@ -62,11 +60,9 @@
           }
         });
         const mensagens = await res.json();
-
-
         mensagens.forEach(m => {
-          addMessage(m.conteudo, 
-            m.remetente_id == usuarioLogado.id ? "me" : "other", 
+          addMessage(m.conteudo,
+            m.remetente_id == usuarioLogado.id ? "me" : "other",
             m.remetente_nome, m.data_envio);
         });
       });
@@ -76,36 +72,24 @@
     document.getElementById('form').addEventListener('submit', (e) => {
       e.preventDefault();
       if (!destinatarioId) return alert("Escolha um usuário para conversar");
-
       const input = document.getElementById('input');
       const msg = input.value.trim();
       if (msg === "") return;
-
       socket.emit("privateMessage", {
-        remetenteId: usuarioLogado.id_usuario,
+        remetenteId: usuarioLogado.id,
         destinatarioId: destinatarioId,
-        conteudo: msg
+        conteudo: msg,
+        data_envio: new Date(),
+        remetenteNome: usuarioLogado.autenticado
       });
-
       addMessage(msg, "me", usuarioLogado.autenticado, new Date());
-      const res =  fetch(`/chat`, {
-        method: "POST",
-        headers: {
-          "Accept": "application/json",
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          destinatario_id: destinatarioId,  
-          conteudo: msg               
-        })
-      })
       input.value = "";
     });
 
     // Receber mensagem
     socket.on("privateMessage", (data) => {
       if (data.remetenteId == destinatarioId) {
-        addMessage(data.conteudo, "other");
+        addMessage(data.conteudo, "other", data.remetenteNome, data.data_envio);
       }
     });
 
@@ -114,7 +98,7 @@
       const div = document.createElement("div");
       div.className = "msg " + type;
       div.innerHTML = `<b>${nome} - ${data_.toLocaleDateString('pt-BR')}
-         ${data_.toLocaleTimeString('pt-BR')} </b> <br><br>`+ text;
+         ${data_.toLocaleTimeString('pt-BR')} </b> <br><br>` + text;
       document.getElementById("messages").appendChild(div);
       div.scrollIntoView();
     }
