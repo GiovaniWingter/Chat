@@ -87,7 +87,7 @@
         conteudo: msg
       });
 
-      addMessage(msg, "me");
+      addMessage(msg, "me", usuarioLogado.autenticado, new Date());
       const res =  fetch(`/chat`, {
         method: "POST",
         headers: {
