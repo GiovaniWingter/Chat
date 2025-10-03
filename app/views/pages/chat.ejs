@@ -39,6 +39,8 @@
 
     const usuarioLogado = <%- JSON.stringify(usuarioLogado) %>;
     let destinatarioId = null;
+    // Enviar login para registrar o socket no servidor
+  socket.emit("login", usuarioLogado.id);
 
     // Quando clicar em um usuário da lista
     document.querySelectorAll('.user-link').forEach(el => {
@@ -82,30 +84,22 @@
       if (msg === "") return;
 
       socket.emit("privateMessage", {
-        remetenteId: usuarioLogado.id_usuario,
+        remetenteId: usuarioLogado.id,
         destinatarioId: destinatarioId,
-        conteudo: msg
+        conteudo: msg,
+        data_envio: new Date(),
+        remetenteNome: usuarioLogado.autenticado
       });
 
       addMessage(msg, "me", usuarioLogado.autenticado, new Date());
-      const res =  fetch(`/chat`, {
-        method: "POST",
-        headers: {
-          "Accept": "application/json",
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          destinatario_id: destinatarioId,  
-          conteudo: msg               
-        })
-      })
       input.value = "";
     });
 
     // Receber mensagem
     socket.on("privateMessage", (data) => {
+      
       if (data.remetenteId == destinatarioId) {
-        addMessage(data.conteudo, "other");
+        addMessage(data.conteudo, "other", data.remetenteNome, data.data_envio);
       }
     });
 

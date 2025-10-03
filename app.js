@@ -6,6 +6,10 @@ const { Server } = require("socket.io");
 const server = http.createServer(app);
 const io = new Server(server);
 
+const { configurarSocketIo } = require("./app/util/socket");
+// Configura o Socket.IO com o servidor HTTP
+configurarSocketIo(io);
+
 var session = require("express-session");
 app.use(
   session({
