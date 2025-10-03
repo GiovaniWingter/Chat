@@ -60,46 +60,6 @@ const mensagemController = {
         }
     },
 
-    // Envia mensagem (mesmo se destinatário não estiver online)
-    enviarMensagem: async (req, res) => {
-        const erros = validationResult(req);
-        if (!erros.isEmpty()) {
-            const usuarios = await usuarioModel.findAll();
-            return res.render("pages/chat", {
-                usuarios,
-                mensagens: [],
-                listaErros: erros,
-                dadosNotificacao: null,
-                usuarioLogado: req.session.autenticado
-            });
-        }
-        const { destinatario_id, conteudo } = req.body;
-        try {
-            const novaMensagem = {
-                remetente_id: req.session.autenticado.id,
-                destinatario_id,
-                conteudo,
-                data_envio: new Date()
-            };
-            let result = await mensagemModel.create(novaMensagem);
-            console.log(result);
-            res.redirect("/chat");
-        } catch (error) {
-            console.log(error);
-            res.render("pages/chat", {
-                usuarios: [],
-                mensagens: [],
-                listaErros: null,
-                dadosNotificacao: {
-                    titulo: "Erro!",
-                    mensagem: "Falha ao enviar mensagem.", tipo: "error"
-                },
-                usuarioLogado: req.session.autenticado
-            });
-        }
-    },
-
-
     salvarMensagemViaSocket: async (data) => {
         const novaMensagem = {
             remetente_id: data.remetenteId,
